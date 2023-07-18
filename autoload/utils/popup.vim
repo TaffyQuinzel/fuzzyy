@@ -10,7 +10,11 @@ var key_callbacks: dict<any>
 var keymaps: dict<any> = {
     'menu_up': ["\<c-p>", "\<Up>"],
     'menu_down': ["\<c-n>", "\<Down>"],
-    'menu_select': ["\<CR>"],
+    'menu_select': ["\<CR>",  # current window
+                    "\<c-t>", # new tab
+                    "\<c-v>", # vertical split
+                    "\<c-s>", # split
+    ],
     'preview_up': ["\<c-u>"],
     'preview_down': ["\<c-d>"],
     'exit': ["\<Esc>", "\<c-c>", "\<c-[>"],
@@ -211,7 +215,7 @@ def MenuFilter(wid: number, key: string): number
         if linetext == ''
             popup_close(wid)
         else
-            popup_close(wid, [linetext])
+            popup_close(wid, [linetext, key])
         endif
     elseif index(keymaps['exit'], key) >= 0
         popup_close(wid)

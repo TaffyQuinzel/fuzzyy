@@ -93,7 +93,19 @@ def Select(wid: number, result: list<any>)
     if enable_devicons
         path = strcharpart(path, devicon_char_width + 1)
     endif
-    execute('edit ' .. path)
+    var action = 'edit '
+    if len(result) > 1
+        if key == "\<CR>" # current window
+            action = 'edit '
+        elseif key == "\<c-t>" # new tab
+            action = 'tabnew '
+        elseif key == "\<c-v>" # vertical split
+            action = 'vsp '
+        elseif key == "\<c-s>" # split
+            action = 'sp '
+        endif
+    endif
+    execute(action .. path)
 enddef
 
 def AsyncCb(result: list<any>)

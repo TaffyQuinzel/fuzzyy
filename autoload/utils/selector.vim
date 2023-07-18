@@ -106,6 +106,7 @@ enddef
 var async_list: list<string>
 var async_limit: number
 var async_pattern: string
+var async_exclude: list<string>
 var async_results: list<any>
 var async_tid: number
 var AsyncCb: func
@@ -145,16 +146,40 @@ enddef
 def Worker(tid: number)
     const ASYNC_STEP = 1000
     var li = async_list[: ASYNC_STEP]
+    var cleaned_pattern: list<string>
+    for s in split(async_pattern)
+        if s[0] == '!'
+            add(async_exclude, s[1 : ])
+        else
+            add(cleaned_pattern, s)
+        endif
+    endfor
+    async_pattern = join(cleaned_pattern)
+
     var results: list<any> = matchfuzzypos(li, async_pattern)
     var processed_results = []
+    var split_pattern = split(async_pattern)
+    var ignore_list = map(filter(split_pattern, (_, v) => v[0] == '!'), (_, v) => v[1:])
 
     var strs = results[0]
     var poss = results[1]
     var scores = results[2]
     for idx in range(len(strs))
-        # merge continus number
-        var poss_result = MergeContinusNumber(poss[idx])
-        add(processed_results, [strs[idx], poss_result, scores[idx]])
+        var s = strs[idx]
+        var found = false
+        for excl in async_exclude
+            if match(s, excl) != -1
+                found = true
+                break
+            endif
+        endfor
+        if found
+            continue
+        else
+            # merge continus number
+            var poss_result = MergeContinusNumber(poss[idx])
+            add(processed_results, [s, poss_result, scores[idx]])
+        endif
     endfor
     async_results += processed_results
     sort(async_results, (a, b) => {
@@ -200,6 +225,7 @@ export def FuzzySearchAsync(li: list<string>, pattern: string, limit: number, Cb
     async_list = li
     async_limit = limit
     async_pattern = pattern
+    async_exclude = []
     async_results = []
     AsyncCb = Cb
     async_tid = timer_start(50, function('Worker'), {'repeat': -1})

@@ -95,6 +95,7 @@ def Select(wid: number, result: list<any>)
     endif
     var action = 'edit '
     if len(result) > 1
+        var key = result[1]
         if key == "\<CR>" # current window
             action = 'edit '
         elseif key == "\<c-t>" # new tab

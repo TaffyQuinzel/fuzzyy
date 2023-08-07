@@ -159,7 +159,7 @@ def Worker(tid: number)
     var results: list<any> = matchfuzzypos(li, async_pattern)
     var processed_results = []
     var split_pattern = split(async_pattern)
-    var ignore_list = map(filter(split_pattern, (_, v) => v[0] == '!'), (_, v) => v[1:])
+    var ignore_list = map(filter(split_pattern, (_, v) => v[0] == '!'), (_, v) => v[1 : ])
 
     var strs = results[0]
     var poss = results[1]

@@ -43,16 +43,28 @@ def Preview(wid: number, opts: dict<any>)
     win_execute(preview_wid, 'norm! zz')
 enddef
 
-def Close(wid: number, result: dict<any>)
-    if has_key(result, 'selected_item')
-        var buf = result.selected_item
-        if enable_devicons
-            buf = strcharpart(buf, devicon_char_width + 1)
+def Select(wid: number, result: list<any>)
+    var buf = result[0]
+    echo buf
+    if enable_devicons
+        buf = strcharpart(buf, devicon_char_width + 1)
+    endif
+    var bufnr = buf_dict[buf][1]
+    if bufnr != bufnr('$')
+        var action = 'buffer '
+        if len(result) > 1
+            var key = result[1]
+            if key == "\<CR>" # current window
+                action = 'buffer '
+            elseif key == "\<c-t>" # new tab
+                action = 'tabnew | buffer '
+            elseif key == "\<c-v>" # vertical split
+                action = 'vsp | buffer '
+            elseif key == "\<c-s>" # split
+                action = 'sb '
+            endif
         endif
-        var bufnr = buf_dict[buf][1]
-        if bufnr != bufnr('$')
-            execute 'buffer' bufnr
-        endif
+        execute(action .. bufnr)
     endif
 enddef
 
@@ -69,7 +81,7 @@ export def Start()
     }, buf_dict)
     var winds = selector.Start(keys(bufs), {
         preview_cb:  function('Preview'),
-        close_cb:  function('Close'),
+        select_cb:  function('Select'),
         width: WIN_WIDTH,
         dropdown: 0,
         preview:  1,

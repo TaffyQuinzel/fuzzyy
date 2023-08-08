@@ -20,7 +20,7 @@ import autoload '../autoload/fuzzy/inbuffer.vim'
 import autoload '../autoload/fuzzy/buffers.vim'
 import autoload '../autoload/fuzzy/highlights.vim'
 
-command! -nargs=0 FuzzyGrep ag.AgStart()
+command! -nargs=? FuzzyGrep ag.AgStart("<args>")
 command! -nargs=0 FuzzyFiles files.FilesStart()
 command! -nargs=0 FuzzyHelps helps.HelpsStart()
 command! -nargs=0 FuzzyColors colors.ColorsStart()

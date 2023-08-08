@@ -1,6 +1,7 @@
 vim9scrip
 
 import autoload 'utils/selector.vim'
+import autoload 'fuzzy/ag2.vim'
 
 var max_count = 1000
 var rg_cmd = 'rg --column -M200 --vimgrep --max-count=' .. max_count .. ' "%s" "%s"'
@@ -269,7 +270,12 @@ def Profiling()
     profile func Reducer
 enddef
 
-export def AgStart()
+export def AgStart(args: string)
+    echo len(args)
+    if len(args) > 0
+        ag2.AgStart(args)
+        return
+    endif
     cwd = getcwd()
     cwdlen = len(cwd)
     cur_pattern = ''
